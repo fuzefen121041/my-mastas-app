@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猫咪健康咨询AI - 上传图片获取专业建议</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f1f5;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8e9f3;
+        }
+
+        .upload-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: #999;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .image-preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .remove-image {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-image:hover {
+            background: #c82333;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            min-height: 50px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .tag .remove-tag {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tag-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            min-width: 120px;
+            padding: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .result-box pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .info-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e7f3ff;
+            color: #0066cc;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐱 猫咪健康咨询AI</h1>
+            <p>上传猫咪照片，描述症状，获取专业建议</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 图片上传区域 -->
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">点击或拖拽上传猫咪照片</div>
+                    <div class="upload-hint">支持 JPG、PNG 格式，最大 5MB</div>
+                </div>
+                <input type="file" id="imageInput" accept="image/*">
+
+                <div class="image-preview" id="imagePreview">
+                    <img id="previewImage" src="" alt="预览">
+                    <br>
+                    <button class="remove-image" onclick="removeImage()">移除图片</button>
+                </div>
+            </div>
+
+            <!-- 咨询表单 -->
+            <form id="consultationForm">
+                <div class="form-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">基本信息</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>猫咪名字</label>
+                            <input type="text" id="catName" placeholder="例如：小橘">
+                        </div>
+
+                        <div class="form-group">
+                            <label>年龄（岁）</label>
+                            <input type="number" id="age" min="0" max="30" step="0.1" placeholder="例如：2">
+                        </div>
+
+                        <div class="form-group">
+                            <label>体重（公斤）</label>
+                            <input type="number" id="weight" min="0" max="20" step="0.1" placeholder="例如：4.5">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>品种（如果已知）</label>
+                        <input type="text" id="breed" placeholder="例如：英国短毛猫">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">咨询内容</h3>
+
+                    <div class="form-group">
+                        <label>咨询类型 <span class="info-badge">必填</span></label>
+                        <select id="consultationType" required>
+                            <option value="general">综合咨询</option>
+                            <option value="health">健康问题</option>
+                            <option value="nutrition">营养建议</option>
+                            <option value="behavior">行为问题</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>症状（多个症状用回车分隔）</label>
+                        <div class="tags-input" id="symptomsContainer">
+                            <input type="text" class="tag-input" id="symptomInput" placeholder="输入症状后按回车，例如：呕吐">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>症状持续时间</label>
+                        <input type="text" id="symptomsDuration" placeholder="例如：2天">
+                    </div>
+
+                    <div class="form-group">
+                        <label>行为变化</label>
+                        <textarea id="behaviorChanges" placeholder="描述猫咪最近的行为变化..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>补充说明</label>
+                        <textarea id="additionalNotes" placeholder="任何您想补充的信息..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    获取专业建议
+                </button>
+            </form>
+
+            <!-- 加载动画 -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="color: #666;">AI正在分析中，请稍候...</p>
+            </div>
+
+            <!-- 错误消息 -->
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- 结果显示 -->
+            <div class="result-section" id="resultSection">
+                <h3 style="margin-bottom: 20px; color: #333;">咨询结果</h3>
+                <div class="result-box" id="resultBox"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedImageBase64 = null;
+        let symptoms = [];
+
+        // 文件上传处理
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImage = document.getElementById('previewImage');
+
+        uploadArea.addEventListener('click', () => imageInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFile(file);
+        });
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                alert('请上传图片文件');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('图片大小不能超过5MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImageBase64 = e.target.result;
+                previewImage.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadArea.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            uploadedImageBase64 = null;
+            previewImage.src = '';
+            imagePreview.style.display = 'none';
+            uploadArea.style.display = 'block';
+            imageInput.value = '';
+        }
+
+        // 症状标签处理
+        const symptomInput = document.getElementById('symptomInput');
+        const symptomsContainer = document.getElementById('symptomsContainer');
+
+        symptomInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const value = symptomInput.value.trim();
+                if (value && !symptoms.includes(value)) {
+                    symptoms.push(value);
+                    addSymptomTag(value);
+                    symptomInput.value = '';
+                }
+            }
+        });
+
+        function addSymptomTag(symptom) {
+            const tag = document.createElement('div');
+            tag.className = 'tag';
+            tag.innerHTML = `
+                ${symptom}
+                <span class="remove-tag" onclick="removeSymptom('${symptom}')">×</span>
+            `;
+            symptomsContainer.insertBefore(tag, symptomInput);
+        }
+
+        function removeSymptom(symptom) {
+            symptoms = symptoms.filter(s => s !== symptom);
+            const tags = symptomsContainer.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                if (tag.textContent.trim().startsWith(symptom)) {
+                    tag.remove();
+                }
+            });
+        }
+
+        // 表单提交
+        document.getElementById('consultationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const request = {
+                catName: document.getElementById('catName').value,
+                age: parseFloat(document.getElementById('age').value) || undefined,
+                weight: parseFloat(document.getElementById('weight').value) || undefined,
+                breed: document.getElementById('breed').value,
+                consultationType: document.getElementById('consultationType').value,
+                symptoms: symptoms.length > 0 ? symptoms : undefined,
+                symptomsDuration: document.getElementById('symptomsDuration').value,
+                behaviorChanges: document.getElementById('behaviorChanges').value,
+                additionalNotes: document.getElementById('additionalNotes').value,
+                imageBase64: uploadedImageBase64,
+            };
+
+            // 显示加载
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('submitBtn').disabled = true;
+
+            try {
+                // 这里需要配置您的API端点
+                // 由于这是静态HTML，实际需要后端API支持
+                // 以下是模拟调用，您需要实现真正的API端点
+
+                // 模拟延迟
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // 这里应该调用真正的API
+                // const response = await fetch('/api/consultation', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(request),
+                // });
+                // const result = await response.json();
+
+                // 模拟响应
+                const result = {
+                    success: true,
+                    consultationId: 'CONSULT-' + Date.now(),
+                    report: {
+                        text: '感谢您提供的详细信息！\n\n' +
+                              '基于您的描述，我建议：\n' +
+                              '1. 密切观察症状变化\n' +
+                              '2. 确保充足的饮水\n' +
+                              '3. 如症状持续，请及时就医\n\n' +
+                              '⚠️ 重要提示：此建议仅供参考，不能替代专业兽医诊断。',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+
+                if (result.success) {
+                    document.getElementById('resultBox').innerHTML = `
+                        <p><strong>咨询ID:</strong> ${result.consultationId}</p>
+                        <p><strong>时间:</strong> ${new Date(result.report.timestamp).toLocaleString('zh-CN')}</p>
+                        <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+                        <pre>${result.report.text}</pre>
+                    `;
+                    document.getElementById('resultSection').style.display = 'block';
+
+                    // 提示用户使用Mastra Playground
+                    setTimeout(() => {
+                        alert('💡 提示：此页面为演示界面。\n\n' +
+                              '要获得完整功能，请：\n' +
+                              '1. 启动服务：npm run dev\n' +
+                              '2. 访问：http://localhost:4111/playground\n' +
+                              '3. 选择 catConsultantAgent\n' +
+                              '4. 上传图片并咨询');
+                    }, 1000);
+                } else {
+                    throw new Error(result.error || '咨询失败');
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = '错误：' + error.message;
+                document.getElementById('errorMessage').style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
