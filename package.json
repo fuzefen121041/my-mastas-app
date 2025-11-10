@@ -9,9 +9,7 @@
     "build": "mastra build",
     "start": "mastra start",
     "test:cat-agent": "tsx test-cat-agent.ts",
-    "test:workflow": "tsx test-workflow.ts",
-    "pages:dev": "wrangler pages dev --compatibility-date=2024-01-01 --port 8788",
-    "pages:deploy": "npm run build && wrangler pages deploy"
+    "test:workflow": "tsx test-workflow.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +20,6 @@
   },
   "dependencies": {
     "@mastra/core": "^0.24.0",
-    "@mastra/deployer-cloudflare": "^0.14.17",
     "@mastra/evals": "^0.14.3",
     "@mastra/libsql": "^0.16.2",
     "@mastra/loggers": "^0.10.19",
@@ -32,7 +29,6 @@
   "devDependencies": {
     "@types/node": "^24.10.0",
     "mastra": "^0.18.0",
-    "typescript": "^5.9.3",
-    "wrangler": "^3.95.0"
+    "typescript": "^5.9.3"
   }
 }
