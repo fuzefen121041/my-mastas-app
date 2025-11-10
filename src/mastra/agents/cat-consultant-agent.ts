@@ -232,9 +232,9 @@ export const catConsultantAgent = new Agent({
     catImageAnalysisTool,
     catEmergencyAssessmentTool,
   },
-  memory: new Memory({
-    storage: new LibSQLStore({
-      url: 'file:../mastra.db',
-    }),
-  }),
+//   memory: new Memory({
+//     storage: new LibSQLStore({
+//       url: 'file:../mastra.db',
+//     }),
+//   }),
 });

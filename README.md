@@ -315,7 +315,7 @@ const imageResponse = await agent.generate({
 my-mastra-app/
 ├── src/
 │   └── mastra/
-│       ├── index.ts                    # Mastra 主配置
+│       ├── index.ts                    # Mastra 主
 │       ├── agents/
 │       │   ├── cat-consultant-agent.ts # 猫咪咨询 Agent
 │       │   └── weather-agent.ts        # (原有) 天气 Agent
