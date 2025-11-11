@@ -1,22 +1,32 @@
-#:schema node_modules/wrangler/config-schema.json
-name = "my-mastra-app"
-compatibility_date = "2024-01-01"
-pages_build_output_dir = ".mastra/output"
+name = "cat-consultation-ai"
+main = "src/worker.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
 
-# 环境变量配置 (部署时需要在 Cloudflare Dashboard 中设置)
-# OPENAI_API_KEY = "your-openai-api-key"
+# Worker 配置
+workers_dev = true
 
-# 启用 Playground（生产环境）
-[vars]
-MASTRA_DEV = "true"
+# 构建配置
+[build]
+command = "npm run build:worker"
 
-# KV 命名空间 (可选,用于缓存)
-# [[kv_namespaces]]
-# binding = "CACHE"
-# id = "your-kv-namespace-id"
+# 环境变量（在本地开发时从 .dev.vars 读取）
+# 生产环境需要在 Cloudflare Dashboard 设置
 
-# D1 数据库配置 (可选,用于替换 LibSQL)
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-mastra-db"
-# database_id = "your-database-id"
+# 路由配置（可选，部署后在 Dashboard 配置）
+# routes = [
+#   { pattern = "your-domain.com/*", zone_name = "your-domain.com" }
+# ]
+
+# 静态资源配置
+# [site]
+# bucket = "./public"
+
+# 环境配置示例
+# [env.production]
+# name = "cat-consultation-ai-production"
+# workers_dev = false
+
+# [env.staging]
+# name = "cat-consultation-ai-staging"
+# workers_dev = true

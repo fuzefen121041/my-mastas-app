@@ -348,6 +348,69 @@ npm run start
 npm test
 ```
 
+## 部署
+
+本项目支持两种部署方式：
+
+### 方式一：Cloudflare Workers（推荐）
+
+适合需要独立 API 和更灵活控制的场景。
+
+**快速部署**：
+```bash
+# 1. 构建 Worker
+npm run build:worker
+
+# 2. 登录 Cloudflare（首次）
+npx wrangler login
+
+# 3. 配置环境变量
+npx wrangler secret put OPENAI_API_KEY
+
+# 4. 部署
+npm run worker:deploy
+```
+
+**本地开发**：
+```bash
+# 启动本地 Workers 环境
+npm run worker:dev
+```
+
+**详细文档**：
+- [快速开始指南](./QUICK_START_WORKERS.md)
+- [完整部署文档](./DEPLOY_WORKERS.md)
+- [改造说明](./MIGRATION_SUMMARY.md)
+
+### 方式二：Cloudflare Pages
+
+适合静态站点和自动化部署的场景。
+
+```bash
+# 构建项目
+npm run build
+
+# 部署到 Pages
+npm run pages:deploy
+```
+
+**或者通过 Git 自动部署**：
+1. 推送代码到 GitHub
+2. 在 Cloudflare Dashboard 连接仓库
+3. 配置构建命令：`npm run build`
+4. 配置环境变量：`OPENAI_API_KEY`
+5. 自动部署
+
+### 选择建议
+
+| 特性 | Cloudflare Workers | Cloudflare Pages |
+|------|-------------------|------------------|
+| 部署难度 | 简单 | 简单 |
+| API 灵活性 | 高 | 中 |
+| 路由控制 | 完全控制 | 自动生成 |
+| 适用场景 | API 服务、复杂逻辑 | 静态站点、自动化部署 |
+| 成本 | 免费 10万请求/天 | 免费 500次构建/月 |
+
 ## 注意事项
 
 ### 重要声明

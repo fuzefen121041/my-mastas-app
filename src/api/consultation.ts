@@ -40,6 +40,14 @@ export async function handleConsultation(
   request: ConsultationRequest
 ): Promise<ConsultationResponse> {
   try {
+    // 调试信息
+    console.log('Mastra object:', mastra);
+    console.log('Mastra agents:', mastra.agents);
+
+    if (!mastra.agents || !mastra.agents.catConsultantAgent) {
+      throw new Error('catConsultantAgent is not available. Mastra may not be initialized correctly in Workers environment.');
+    }
+
     const agent = mastra.agents.catConsultantAgent;
 
     // 构建消息内容
